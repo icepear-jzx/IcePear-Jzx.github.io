@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Zhexin Jin">
+
+
+
+
+
+<title>binary-search | Zhexin&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/image/icepear-mini.jpg">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Zhexin&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Zhexin&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">binary-search</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Zhexin Jin</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">November 10, 2021&nbsp;&nbsp;1:59:50</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="LeetCode-Problems"><a href="#LeetCode-Problems" class="headerlink" title="LeetCode Problems"></a>LeetCode Problems</h2><p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/median-of-two-sorted-arrays/">4. Median of Two Sorted Arrays</a></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/">34. Find First and Last Position of Element in Sorted Array</a> <span class="emoji" alias="star" style="" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2b50.png?v8">&#x2b50;</span></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/">153. Find Minimum in Rotated Sorted Array</a> <span class="emoji" alias="star" style="" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2b50.png?v8">&#x2b50;</span></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/find-peak-element/">162. Find Peak Element</a> <span class="emoji" alias="star" style="" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2b50.png?v8">&#x2b50;</span></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/">378. Kth Smallest Element in a Sorted Matrix</a></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/koko-eating-bananas/">875. Koko Eating Bananas</a> <span class="emoji" alias="star" style="" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2b50.png?v8">&#x2b50;</span></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/snapshot-array/">1146. Snapshot Array</a> <span class="emoji" alias="star" style="" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2b50.png?v8">&#x2b50;</span></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode.com/problems/maximum-profit-in-job-scheduling/">1235. Maximum Profit in Job Scheduling</a></p>
+<h2 id="Why-Use-Binary-Search"><a href="#Why-Use-Binary-Search" class="headerlink" title="Why Use Binary Search"></a>Why Use Binary Search</h2><h3 id="Search-in-Ordered-Context"><a href="#Search-in-Ordered-Context" class="headerlink" title="Search in Ordered Context"></a>Search in Ordered Context</h3><p><code>Binary Search</code> is an algorithm to search an element in a sorted array in $O(\log n)$ time. However, it doesn’t have to be a sorted array. Some data structures with order involved can also apply <code>Binary Search</code> with some variances.</p>
+<h2 id="When-to-Use-Binary-Search"><a href="#When-to-Use-Binary-Search" class="headerlink" title="When to Use Binary Search"></a>When to Use Binary Search</h2><h3 id="Partially-Ordered-Data-Structures"><a href="#Partially-Ordered-Data-Structures" class="headerlink" title="Partially Ordered Data Structures"></a>Partially Ordered Data Structures</h3><p>In <a target="_blank" rel="noopener" href="https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/">Find Minimum in Rotated Sorted Array</a>, an ordered array is ratated. We can modify <code>Binary Search</code> a little to deal with this problem. In <a target="_blank" rel="noopener" href="https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/">Kth Smallest Element in a Sorted Matrix</a>, each row and column is sorted, so we can use <code>Binary Search</code> in this problem too.</p>
+<h3 id="Implicit-Sorted-Arrays"><a href="#Implicit-Sorted-Arrays" class="headerlink" title="Implicit Sorted Arrays"></a>Implicit Sorted Arrays</h3><p>In <a target="_blank" rel="noopener" href="https://leetcode.com/problems/koko-eating-bananas/">Koko Eating Bananas</a>, there is no explicitly sorted or partially sorted data structures at the first glance. However, there is an implicit sorted array. The index is the eating speed, and the value is the total hours to finish eating all bananas at the speed. When index increases, which means the eating speed increases, the hours needed are decreasing, so this is a descending array.</p>
+<h3 id="Combine-with-Other-Algorithms"><a href="#Combine-with-Other-Algorithms" class="headerlink" title="Combine with Other Algorithms"></a>Combine with Other Algorithms</h3><p>In an interview, you are not likely to be asked to implement the original <code>Binary Search</code> given a sorted array because it’s too easy. However, you may need to implement the unmodified version of <code>Binary Search</code> as a step in other algorithms. For example, in <a target="_blank" rel="noopener" href="https://leetcode.com/problems/snapshot-array/">Snapshot Array</a>, snapshots are ordred by their timestamps, so while searching for a specific version, we can used <code>Binary Search</code>.</p>
+<h2 id="How-to-Use-Binary-Search"><a href="#How-to-Use-Binary-Search" class="headerlink" title="How to Use Binary Search"></a>How to Use Binary Search</h2><p>For the most of time, a <code>Binary Search</code> problem can be easily identified. However, the implementation varies from problem to problem. The most difficult part of <code>Binary Search</code> is how to deal with corner cases and when to end the search.</p>
+<h3 id="Find-First-Position-of-Element-in-Sorted-Array"><a href="#Find-First-Position-of-Element-in-Sorted-Array" class="headerlink" title="Find First Position of Element in Sorted Array"></a>Find First Position of Element in Sorted Array</h3><p>Let’s look at the first part of <a target="_blank" rel="noopener" href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/">Find First and Last Position of Element in Sorted Array</a>. It can be converted to another problem: given a sorted array <code>nums</code>, return the index of the first number equal to or larger than <code>target</code>. Numbers in the array may not be unique.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">binarySearchFirstNumberNoLessThanTarget</span>(<span class="params">nums, target</span>):</span></span><br><span class="line">    left, right = <span class="number">0</span>, <span class="built_in">len</span>(nums) - <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> left &lt;= right:</span><br><span class="line">        pivot = (left + right) // <span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> nums[pivot] &lt; target:</span><br><span class="line">            left = pivot + <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            right = pivot - <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> right + <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Find-Last-Position-of-Element-in-Sorted-Array"><a href="#Find-Last-Position-of-Element-in-Sorted-Array" class="headerlink" title="Find Last Position of Element in Sorted Array"></a>Find Last Position of Element in Sorted Array</h3><p>Let’s look at the second part of <a target="_blank" rel="noopener" href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/">Find First and Last Position of Element in Sorted Array</a>. It can be converted to another problem: given a sorted array <code>nums</code>, return the index of the last number equal to or less than <code>target</code>. Numbers in the array may not be unique.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">binarySearchLastNumberNoLargerThanTarget</span>(<span class="params">nums, target</span>):</span></span><br><span class="line">    left, right = <span class="number">0</span>, <span class="built_in">len</span>(nums) - <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> left &lt;= right:</span><br><span class="line">        pivot = (left + right) // <span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> nums[pivot] &gt; target:</span><br><span class="line">            right = pivot - <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            left = pivot + <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> right</span><br></pre></td></tr></table></figure>
+
+<h3 id="Search-for-Distinct-Element"><a href="#Search-for-Distinct-Element" class="headerlink" title="Search for Distinct Element"></a>Search for Distinct Element</h3><p>Given a sorted array <code>nums</code>, return the index of the <code>target</code> number if it exists, otherwise return <code>-1</code>. Numbers in the array are distinct.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">binarySearchTarget</span>(<span class="params">nums, target</span>):</span></span><br><span class="line">    left, right = <span class="number">0</span>, <span class="built_in">len</span>(nums) - <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> left &lt;= right:</span><br><span class="line">        pivot = (left + right) // <span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> nums[pivot] == target:</span><br><span class="line">            <span class="keyword">return</span> pivot</span><br><span class="line">        <span class="keyword">elif</span> nums[pivot] &gt; target:</span><br><span class="line">            right = pivot - <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            left = pivot + <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Examples"><a href="#Examples" class="headerlink" title="Examples"></a>Examples</h2><h3 id="34-Find-First-and-Last-Position-of-Element-in-Sorted-Array"><a href="#34-Find-First-and-Last-Position-of-Element-in-Sorted-Array" class="headerlink" title="34. Find First and Last Position of Element in Sorted Array"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/">34. Find First and Last Position of Element in Sorted Array</a></h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">searchRange</span>(<span class="params">self, nums: List[<span class="built_in">int</span>], target: <span class="built_in">int</span></span>) -&gt; List[int]:</span></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">binarySearchFirstNumberNoLessThanTarget</span>(<span class="params">nums, target</span>):</span></span><br><span class="line">            left, right = <span class="number">0</span>, <span class="built_in">len</span>(nums) - <span class="number">1</span></span><br><span class="line">            <span class="keyword">while</span> left &lt;= right:</span><br><span class="line">                pivot = (left + right) // <span class="number">2</span></span><br><span class="line">                <span class="keyword">if</span> nums[pivot] &lt; target:</span><br><span class="line">                    left = pivot + <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    right = pivot - <span class="number">1</span></span><br><span class="line">            <span class="keyword">return</span> right + <span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">binarySearchLastNumberNoLargerThanTarget</span>(<span class="params">nums, target</span>):</span></span><br><span class="line">            left, right = <span class="number">0</span>, <span class="built_in">len</span>(nums) - <span class="number">1</span></span><br><span class="line">            <span class="keyword">while</span> left &lt;= right:</span><br><span class="line">                pivot = (left + right) // <span class="number">2</span></span><br><span class="line">                <span class="keyword">if</span> nums[pivot] &gt; target:</span><br><span class="line">                    right = pivot - <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    left = pivot + <span class="number">1</span></span><br><span class="line">            <span class="keyword">return</span> right</span><br><span class="line">        </span><br><span class="line">        left = binarySearchFirstNumberNoLessThanTarget(nums, target)</span><br><span class="line">        <span class="keyword">if</span> left &gt;= <span class="built_in">len</span>(nums) <span class="keyword">or</span> nums[left] != target:</span><br><span class="line">            left = -<span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        right = binarySearchLastNumberNoLargerThanTarget(nums, target)</span><br><span class="line">        <span class="keyword">if</span> right &lt; <span class="number">0</span> <span class="keyword">or</span> nums[right] != target: </span><br><span class="line">            right = -<span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> [left, right]</span><br></pre></td></tr></table></figure>
+
+<h3 id="153-Find-Minimum-in-Rotated-Sorted-Array"><a href="#153-Find-Minimum-in-Rotated-Sorted-Array" class="headerlink" title="153. Find Minimum in Rotated Sorted Array"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/">153. Find Minimum in Rotated Sorted Array</a></h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">findMin</span>(<span class="params">self, nums: List[<span class="built_in">int</span>]</span>) -&gt; int:</span></span><br><span class="line">        n = <span class="built_in">len</span>(nums)</span><br><span class="line">        left, right = <span class="number">0</span>, n - <span class="number">1</span></span><br><span class="line">        <span class="keyword">while</span> left &lt;= right <span class="keyword">and</span> nums[left] &gt; nums[right]:</span><br><span class="line">            pivot = (left + right) // <span class="number">2</span></span><br><span class="line">            <span class="keyword">if</span> nums[left] &lt;= nums[pivot]:</span><br><span class="line">                left = pivot + <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                right = pivot - <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">min</span>(nums[left], nums[(right+<span class="number">1</span>)%n])</span><br></pre></td></tr></table></figure>
+
+<h3 id="162-Find-Peak-Element"><a href="#162-Find-Peak-Element" class="headerlink" title="162. Find Peak Element"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/find-peak-element/">162. Find Peak Element</a></h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">findPeakElement</span>(<span class="params">self, nums: List[<span class="built_in">int</span>]</span>) -&gt; int:</span></span><br><span class="line">        n = <span class="built_in">len</span>(nums)</span><br><span class="line">        nums.append(-<span class="built_in">float</span>(<span class="string">&#x27;inf&#x27;</span>)) <span class="comment"># nums[n]</span></span><br><span class="line">        nums.append(-<span class="built_in">float</span>(<span class="string">&#x27;inf&#x27;</span>)) <span class="comment"># nums[-1]</span></span><br><span class="line">        left, right = <span class="number">0</span>, n - <span class="number">1</span></span><br><span class="line">        <span class="keyword">while</span> left &lt;= right:</span><br><span class="line">            pivot = (left + right) // <span class="number">2</span></span><br><span class="line">            <span class="keyword">if</span> nums[pivot] &gt; nums[pivot-<span class="number">1</span>] <span class="keyword">and</span> nums[pivot] &gt; nums[pivot+<span class="number">1</span>]:</span><br><span class="line">                <span class="keyword">return</span> pivot</span><br><span class="line">            <span class="keyword">if</span> nums[pivot] &lt; nums[pivot-<span class="number">1</span>]:</span><br><span class="line">                right = pivot - <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                left = pivot + <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="875-Koko-Eating-Bananas"><a href="#875-Koko-Eating-Bananas" class="headerlink" title="875. Koko Eating Bananas"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/koko-eating-bananas/">875. Koko Eating Bananas</a></h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">minEatingSpeed</span>(<span class="params">self, piles: List[<span class="built_in">int</span>], h: <span class="built_in">int</span></span>) -&gt; int:</span></span><br><span class="line">        left, right = <span class="number">1</span>, <span class="built_in">max</span>(piles)</span><br><span class="line">        <span class="keyword">while</span> left &lt;= right:</span><br><span class="line">            pivot = (left + right) // <span class="number">2</span></span><br><span class="line">            <span class="keyword">if</span> self.success(piles, h, pivot):</span><br><span class="line">                right = pivot - <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                left = pivot + <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> right + <span class="number">1</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">success</span>(<span class="params">self, piles, h, k</span>):</span></span><br><span class="line">        <span class="keyword">for</span> p <span class="keyword">in</span> piles:</span><br><span class="line">            h -= (p + k - <span class="number">1</span>) // k</span><br><span class="line">        <span class="keyword">return</span> h &gt;= <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1146-Snapshot-Array"><a href="#1146-Snapshot-Array" class="headerlink" title="1146. Snapshot Array"></a><a target="_blank" rel="noopener" href="https://leetcode.com/problems/snapshot-array/">1146. Snapshot Array</a></h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> bisect <span class="keyword">import</span> bisect</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SnapshotArray</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, length: <span class="built_in">int</span></span>):</span></span><br><span class="line">        self.array = [[[<span class="number">0</span>, <span class="number">0</span>]] <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(length)]</span><br><span class="line">        self.snap_id = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set</span>(<span class="params">self, index: <span class="built_in">int</span>, val: <span class="built_in">int</span></span>) -&gt; <span class="keyword">None</span>:</span></span><br><span class="line">        <span class="keyword">if</span> self.array[index][-<span class="number">1</span>][<span class="number">0</span>] == self.snap_id:</span><br><span class="line">            self.array[index][-<span class="number">1</span>][<span class="number">1</span>] = val</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.array[index].append([self.snap_id, val])</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">snap</span>(<span class="params">self</span>) -&gt; int:</span></span><br><span class="line">        self.snap_id += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> self.snap_id - <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span>(<span class="params">self, index: <span class="built_in">int</span>, snap_id: <span class="built_in">int</span></span>) -&gt; int:</span></span><br><span class="line">        snap_id_index = bisect(self.array[index], [snap_id, <span class="number">10</span>**<span class="number">9</span>]) - <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> self.array[index][snap_id_index][<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Zhexin Jin</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>While the world sleeps, you dream.</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Algorithms/"># Algorithms</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2021/10/15/line-sweep/">Line Sweep Algorithm</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Zhexin Jin | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
